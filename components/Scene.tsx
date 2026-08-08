@@ -2,8 +2,9 @@
 
 import { Canvas } from "@react-three/fiber";
 import Light from "@/components/Light";
-import Cube from "@/components/Cube";
+import GroundPlane from "@/components/GroundPlane";
 import Controls from "@/components/Controls";
+import CameraTweaks from "@/components/CameraTweaks";
 import { createWebGPURenderer, useParametersToggle } from "tsl-inspector";
 
 export default function Scene() {
@@ -11,12 +12,18 @@ export default function Scene() {
 
   return (
     <Canvas
-      camera={{ position: [0, 14, 34], fov: 45, near: 0.1, far: 2000 }}
+      camera={{
+        position: [3.4, 19.2, 24.7],
+        fov: 45,
+        near: 0.1,
+        far: 2000,
+      }}
       gl={createWebGPURenderer}
     >
       <Light />
-      <Cube />
+      <GroundPlane />
       <Controls />
+      <CameraTweaks />
     </Canvas>
   );
 }
