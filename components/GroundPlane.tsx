@@ -1,13 +1,14 @@
 import { useControls } from "tsl-inspector";
-import { PLANE_DEFAULTS } from "@/configs/groundPlaneConfigs";
+import { GROUND } from "@/configs/groundPlaneConfigs";
+import { normalNode, positionNode } from "@/lib/ground";
 
 export default function GroundPlane() {
   const { size, segments, wireframe } = useControls(
-    "Plane",
+    "Ground/shape",
     {
-      size: { value: PLANE_DEFAULTS.size, min: 1, max: 40, step: 0.01 },
-      segments: { value: PLANE_DEFAULTS.segments, min: 0, max: 300, step: 1 },
-      wireframe: PLANE_DEFAULTS.wireframe,
+      size: { value: GROUND.size, min: 30, max: 60, step: 0.01 },
+      segments: { value: GROUND.segments, min: 1, max: 400, step: 1 },
+      wireframe: GROUND.wireframe,
     },
     { order: 1 },
   );
@@ -15,7 +16,12 @@ export default function GroundPlane() {
   return (
     <mesh scale={size} rotation-x={-Math.PI / 2}>
       <planeGeometry args={[1, 1, segments, segments]} />
-      <meshStandardMaterial wireframe={wireframe} roughness={0.6} />
+      <meshStandardNodeMaterial
+        positionNode={positionNode}
+        normalNode={normalNode}
+        wireframe={wireframe}
+        roughness={0.6}
+      />
     </mesh>
   );
 }

@@ -1,5 +1,10 @@
-export const PLANE_DEFAULTS = {
-    segments: 1,
-    wireframe: false,
-    size: 15,
-}
+export const GROUND = {
+  segments: 300,
+  wireframe: false,
+  size: 45,
+};
+
+export const GROUND_VERTEX = {
+  frequency: 2.2,
+  amplitude: 0.09,
+};
