@@ -5,7 +5,7 @@ export default function CameraTweaks() {
   const camera = useThree((s) => s.camera);
 
   useControls(
-    "Camera",
+    "Scene/camera",
     {
       "Log position": button(() => {
         const { x, y, z } = camera.position;
