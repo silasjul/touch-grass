@@ -13,14 +13,15 @@ import {
 } from "three/tsl";
 import type * as THREE from "three/webgpu";
 import { GRASS_FIELD } from "@/configs/grass/grassField";
-import { HEIGHT_FIELD } from "@/configs/groundPlaneConfigs";
+import { GROUND, HEIGHT_FIELD } from "@/configs/groundPlaneConfigs";
+import { groundShape } from "@/lib/terrain/groundShape";
 import { groundSize } from "@/lib/terrain/groundSize";
 import { heightTexture } from "@/lib/terrain/heightField";
 import { fieldTweaks } from "./tweaks/fieldTweaks";
 
 export const columnsFor = (blades: number) => Math.ceil(Math.sqrt(blades));
 
-export const gridColumns = uniform(columnsFor(GRASS_FIELD.blades));
+export const gridColumns = uniform(columnsFor(GRASS_FIELD.density * GROUND.size ** 2));
 
 const fieldArea = groundSize.mul(fieldTweaks.coverage);
 
@@ -65,4 +66,11 @@ export function patchAt(xz: THREE.Node<"vec2">) {
   );
 
   return mix(float(1), density, fieldTweaks.patchStrength);
+}
+
+export function insideField(xz: THREE.Node<"vec2">) {
+  const radius = fieldArea.mul(0.5);
+  const round = smoothstep(radius.mul(0.98), radius, xz.length()).oneMinus();
+
+  return mix(float(1), round, groundShape);
 }

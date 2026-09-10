@@ -21,7 +21,7 @@ import {
   bladeWidth,
   widthProfile,
 } from "./bladeShape";
-import { bladeAnchor, groundAt, patchAt } from "./placement";
+import { bladeAnchor, groundAt, insideField, patchAt } from "./placement";
 import { fieldTweaks } from "./tweaks/fieldTweaks";
 import { shapeTweaks } from "./tweaks/shapeTweaks";
 import { flutterAt, gustAt, windAlignment, windDirection } from "./wind";
@@ -49,7 +49,8 @@ export function buildBlade() {
   const sideAxis = normalize(cross(up, vec3(facing.x, 0, facing.y))).toVar();
   const bendAxis = cross(sideAxis, up).toVar();
 
-  const height = bladeHeight.mul(patchAt(anchor)).toVar();
+  const inside = insideField(anchor).toVar();
+  const height = bladeHeight.mul(patchAt(anchor)).mul(inside).toVar();
   const bend = bladeBend.add(gust).max(0.02).toVar();
   const angle = bend.mul(along).toVar();
   const radius = height.div(bend);
@@ -64,7 +65,7 @@ export function buildBlade() {
   const edgeOn = abs(dot(bendAxis, normalize(cameraPosition.sub(root))));
   const widen = mix(float(1), float(1).div(max(edgeOn, 0.2)), fieldTweaks.viewWiden).min(4);
 
-  const width = widthProfile(along).mul(bladeWidth).mul(widen);
+  const width = widthProfile(along).mul(bladeWidth).mul(widen).mul(inside);
   const flutter = flutterAt(bladeRandom.phase).mul(along).mul(along).mul(height);
 
   const position = root.add(arc).add(widthAxis.mul(side.mul(width).add(flutter)));

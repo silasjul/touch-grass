@@ -1,5 +1,6 @@
 export const GROUND = {
   segments: 300,
+  shape: "circle",
   wireframe: false,
   size: 45,
 };

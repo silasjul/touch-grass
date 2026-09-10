@@ -1,5 +1,6 @@
 export const GRASS_FIELD = {
-  blades: 380000,
+  density: 187.7,
+  maxBlades: 1000000,
   segments: 5,
   coverage: 1,
   jitter: 0.98,
