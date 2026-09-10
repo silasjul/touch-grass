@@ -4,7 +4,9 @@ import { windTweaks as w } from "./tweaks/windTweaks";
 
 type Float = THREE.Node<"float">;
 
-export const flutterAt = (phase: Float) =>
-  sin(time.mul(w.flutterSpeed).add(phase.mul(Math.PI * 2))).mul(w.flutter);
+export const swayFrom = (gust: Float) => gust.mul(w.sway);
 
 export const windAlignment = (gust: Float) => gust.mul(w.align).saturate();
+
+export const bobbleAt = (phase: Float) =>
+  sin(time.mul(w.bobbleSpeed).add(phase.mul(Math.PI * 2))).mul(w.bobble);

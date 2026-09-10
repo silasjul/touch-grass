@@ -26,7 +26,7 @@ export const GROUND_NOISE = {
 
 export const GROUND_SURFACE = {
   scale: 3.5,
-  brightness: 1.33,
+  brightness: 0.38,
   contrast: 0.92,
   saturation: 0.98,
   tint: "#ffffff",

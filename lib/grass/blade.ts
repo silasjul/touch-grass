@@ -22,10 +22,12 @@ import {
   bladeWidth,
   widthProfile,
 } from "./bladeShape";
-import { bladeAnchor, groundAt, insideField, patchAt } from "./placement";
+import { groundAt } from "@/lib/field/ground";
+import { gustAt, windDirection } from "@/lib/wind/gust";
+import { bladeAnchor, insideField, patchAt } from "./placement";
 import { fieldTweaks } from "./tweaks/fieldTweaks";
 import { shapeTweaks } from "./tweaks/shapeTweaks";
-import { flutterAt, gustAt, windAlignment, windDirection } from "./wind";
+import { flutterAt, windAlignment } from "./wind";
 
 const TAU = Math.PI * 2;
 

@@ -6,6 +6,7 @@ import { fromAngles } from "@/lib/scene/spherical";
 import Light from "@/components/Light";
 import GroundPlane from "@/components/Ground/GroundPlane";
 import GrassField from "@/components/Grass/GrassField";
+import FlowerField from "@/components/Flowers/FlowerField";
 import Sky from "@/components/Sky";
 import CameraOrbit from "@/components/Camera/CameraOrbit";
 import CameraTweaks from "@/components/Camera/CameraTweaks";
@@ -28,6 +29,7 @@ export default function Scene() {
       <Light />
       <GroundPlane />
       <GrassField />
+      <FlowerField />
       <CameraOrbit />
       <CameraTweaks />
     </Canvas>

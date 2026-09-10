@@ -6,18 +6,18 @@ import { useParameters } from "tsl-inspector";
  * Returns the `onBeforeRender` to hang on every chunk. Three only calls it for a mesh that survived
  * frustum culling, so counting the calls is the one honest count of what the GPU was asked to draw.
  */
-export function useBladeCount(perChunk: number, chunks: number) {
+export function useDrawCount(folder: string, label: string, perChunk: number, chunks: number) {
   const drawn = useRef(0);
-  const readout = useRef({ blades: "0", chunks: "0" }).current;
+  const readout = useRef({ instances: "0", chunks: "0" }).current;
 
-  useParameters("Grass/count", (group) => {
-    group.add(readout, "blades").name("blades").listen();
+  useParameters(folder, (group) => {
+    group.add(readout, "instances").name(label).listen();
     group.add(readout, "chunks").name("chunks").listen();
   });
 
   // A frame behind: this runs before the render that fills the counter it reads.
   useFrame(() => {
-    readout.blades = (drawn.current * perChunk).toLocaleString();
+    readout.instances = (drawn.current * perChunk).toLocaleString();
     readout.chunks = `${drawn.current} / ${chunks}`;
     drawn.current = 0;
   });

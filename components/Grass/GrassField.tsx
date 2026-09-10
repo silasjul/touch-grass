@@ -2,11 +2,11 @@ import { useEffect, useMemo } from "react";
 import * as THREE from "three/webgpu";
 import { folder, useControls } from "tsl-inspector";
 import { GRASS_FIELD } from "@/configs/grass/grassField";
-import { useBladeCount } from "@/hooks/grass/useBladeCount";
+import { useDrawCount } from "@/hooks/field/useDrawCount";
 import { buildBladeGeometry } from "@/lib/grass/bladeGeometry";
-import { chunkColumnsFor, chunkRadius, layOutChunks } from "@/lib/grass/chunks";
+import { chunkColumnsFor, chunkRadius, layOutChunks } from "@/lib/field/chunks";
 import { buildGrassNodes } from "@/lib/grass/grassNodes";
-import { fieldChunks, fieldCoverage, gridColumns } from "@/lib/grass/placement";
+import { grassScatter } from "@/lib/grass/placement";
 import { useGroundStore } from "@/stores/groundStore";
 
 export default function GrassField() {
@@ -61,12 +61,12 @@ export default function GrassField() {
 
   const laid = useMemo(() => layOutChunks(span, chunks, shape), [span, chunks, shape]);
 
-  const count = useBladeCount(columns * columns, laid.length);
+  const count = useDrawCount("Grass/count", "blades", columns * columns, laid.length);
 
   useEffect(() => {
-    gridColumns.value = columns;
-    fieldChunks.value = chunks;
-    fieldCoverage.value = coverage;
+    grassScatter.columns.value = columns;
+    grassScatter.chunks.value = chunks;
+    grassScatter.coverage.value = coverage;
   }, [columns, chunks, coverage]);
 
   useEffect(() => () => geometry.dispose(), [geometry]);

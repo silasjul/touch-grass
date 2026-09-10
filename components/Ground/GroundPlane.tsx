@@ -63,6 +63,7 @@ export default function GroundPlane() {
           roughnessNode={nodes.roughnessNode}
           aoNode={nodes.aoNode}
           wireframe={wireframe}
+          side={THREE.DoubleSide}
         />
       </mesh>
 

@@ -1,0 +1,18 @@
+export const FLOWER_COLOR = {
+  stemRoot: "#33501c",
+  stemTip: "#6d9440",
+  variance: 0.16,
+  roughness: 0.52,
+  occlusion: 0.45,
+  translucency: 1.4,
+  translucencyFocus: 4.2,
+  dandelionPetal: "#f2b705",
+  dandelionEdge: "#ffe066",
+  dandelionCentre: "#c98a04",
+  daisyPetal: "#f6f2ea",
+  daisyEdge: "#ffffff",
+  daisyCentre: "#f2c53d",
+  blowballPetal: "#dfe3df",
+  blowballEdge: "#fbfdfb",
+  blowballCentre: "#b9a884",
+};

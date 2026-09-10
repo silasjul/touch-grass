@@ -1,79 +1,21 @@
-import {
-  float,
-  hash,
-  instanceIndex,
-  mix,
-  modelPosition,
-  mx_noise_float,
-  smoothstep,
-  texture,
-  uint,
-  uniform,
-  vec2,
-  vec3,
-} from "three/tsl";
+import { float, mix, mx_noise_float, smoothstep } from "three/tsl";
 import type * as THREE from "three/webgpu";
 import { GRASS_FIELD } from "@/configs/grass/grassField";
-import { GROUND, HEIGHT_FIELD } from "@/configs/groundPlaneConfigs";
-import { groundShape } from "@/lib/terrain/groundShape";
-import { groundSize } from "@/lib/terrain/groundSize";
-import { heightTexture } from "@/lib/terrain/heightField";
+import { GROUND } from "@/configs/groundPlaneConfigs";
+import { columnsFor, createScatter } from "@/lib/field/scatter";
 import { fieldTweaks } from "./tweaks/fieldTweaks";
 
-export const columnsFor = (blades: number) => Math.ceil(Math.sqrt(blades));
+export const grassScatter = createScatter({
+  columns: columnsFor((GRASS_FIELD.density * GROUND.size ** 2) / GRASS_FIELD.chunks ** 2),
+  chunks: GRASS_FIELD.chunks,
+  coverage: GRASS_FIELD.coverage,
+});
 
-export const gridColumns = uniform(
-  columnsFor((GRASS_FIELD.density * GROUND.size ** 2) / GRASS_FIELD.chunks ** 2),
-);
-export const fieldChunks = uniform(GRASS_FIELD.chunks);
-export const fieldCoverage = uniform(GRASS_FIELD.coverage);
+export const bladeIndex = grassScatter.index;
 
-const fieldArea = groundSize.mul(fieldCoverage);
-const chunkArea = fieldArea.div(fieldChunks);
+export const bladeAnchor = () => grassScatter.anchor(fieldTweaks.jitter);
 
-const chunkCell = modelPosition.xz.add(fieldArea.mul(0.5)).div(chunkArea).floor();
-
-/** Every chunk draws the same `instanceIndex` range, so seeding on it alone tiles one patch. */
-export const bladeIndex = chunkCell.y
-  .mul(fieldChunks)
-  .add(chunkCell.x)
-  .mul(gridColumns)
-  .mul(gridColumns)
-  .add(instanceIndex.toFloat());
-
-export function bladeAnchor() {
-  const columns = uint(gridColumns);
-  const cell = chunkArea.div(gridColumns);
-  const column = instanceIndex.mod(columns).toFloat();
-  const row = instanceIndex.div(columns).toFloat();
-
-  const offset = vec2(hash(bladeIndex), hash(bladeIndex.add(7)))
-    .sub(0.5)
-    .mul(fieldTweaks.jitter);
-
-  const local = vec2(column, row).add(offset).add(0.5).mul(cell).sub(chunkArea.mul(0.5));
-
-  return local.add(modelPosition.xz).toVar();
-}
-
-function heightAt(xz: THREE.Node<"vec2">) {
-  const u = xz.x.div(groundSize).add(0.5);
-  const v = xz.y.div(groundSize).mul(-1).add(0.5);
-
-  return texture(heightTexture, vec2(u, v)).r.mul(groundSize);
-}
-
-export function groundAt(xz: THREE.Node<"vec2">) {
-  const step = groundSize.div(HEIGHT_FIELD.resolution);
-
-  const height = heightAt(xz).toVar();
-  const alongX = heightAt(xz.add(vec2(step, 0)));
-  const alongZ = heightAt(xz.add(vec2(0, step)));
-
-  const normal = vec3(height.sub(alongX), step, height.sub(alongZ)).normalize().toVar();
-
-  return { height, normal };
-}
+export const insideField = grassScatter.insideField;
 
 export function patchAt(xz: THREE.Node<"vec2">) {
   const noise = mx_noise_float(xz.mul(fieldTweaks.patchScale)).mul(0.5).add(0.5);
@@ -84,11 +26,4 @@ export function patchAt(xz: THREE.Node<"vec2">) {
   );
 
   return mix(float(1), density, fieldTweaks.patchStrength);
-}
-
-export function insideField(xz: THREE.Node<"vec2">) {
-  const radius = fieldArea.mul(0.5);
-  const round = smoothstep(radius.mul(0.98), radius, xz.length()).oneMinus();
-
-  return mix(float(1), round, groundShape);
 }
