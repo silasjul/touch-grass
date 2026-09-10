@@ -3,6 +3,7 @@ import {
   hash,
   instanceIndex,
   mix,
+  modelPosition,
   mx_noise_float,
   smoothstep,
   texture,
@@ -21,21 +22,38 @@ import { fieldTweaks } from "./tweaks/fieldTweaks";
 
 export const columnsFor = (blades: number) => Math.ceil(Math.sqrt(blades));
 
-export const gridColumns = uniform(columnsFor(GRASS_FIELD.density * GROUND.size ** 2));
+export const gridColumns = uniform(
+  columnsFor((GRASS_FIELD.density * GROUND.size ** 2) / GRASS_FIELD.chunks ** 2),
+);
+export const fieldChunks = uniform(GRASS_FIELD.chunks);
+export const fieldCoverage = uniform(GRASS_FIELD.coverage);
 
-const fieldArea = groundSize.mul(fieldTweaks.coverage);
+const fieldArea = groundSize.mul(fieldCoverage);
+const chunkArea = fieldArea.div(fieldChunks);
+
+const chunkCell = modelPosition.xz.add(fieldArea.mul(0.5)).div(chunkArea).floor();
+
+/** Every chunk draws the same `instanceIndex` range, so seeding on it alone tiles one patch. */
+export const bladeIndex = chunkCell.y
+  .mul(fieldChunks)
+  .add(chunkCell.x)
+  .mul(gridColumns)
+  .mul(gridColumns)
+  .add(instanceIndex.toFloat());
 
 export function bladeAnchor() {
   const columns = uint(gridColumns);
-  const cell = fieldArea.div(gridColumns);
+  const cell = chunkArea.div(gridColumns);
   const column = instanceIndex.mod(columns).toFloat();
   const row = instanceIndex.div(columns).toFloat();
 
-  const offset = vec2(hash(instanceIndex), hash(instanceIndex.add(7)))
+  const offset = vec2(hash(bladeIndex), hash(bladeIndex.add(7)))
     .sub(0.5)
     .mul(fieldTweaks.jitter);
 
-  return vec2(column, row).add(offset).add(0.5).mul(cell).sub(fieldArea.mul(0.5)).toVar();
+  const local = vec2(column, row).add(offset).add(0.5).mul(cell).sub(chunkArea.mul(0.5));
+
+  return local.add(modelPosition.xz).toVar();
 }
 
 function heightAt(xz: THREE.Node<"vec2">) {

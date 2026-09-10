@@ -7,6 +7,7 @@ import {
   float,
   max,
   mix,
+  modelPosition,
   normalize,
   positionGeometry,
   sin,
@@ -68,7 +69,12 @@ export function buildBlade() {
   const width = widthProfile(along).mul(bladeWidth).mul(widen).mul(inside);
   const flutter = flutterAt(bladeRandom.phase).mul(along).mul(along).mul(height);
 
-  const position = root.add(arc).add(widthAxis.mul(side.mul(width).add(flutter)));
+  // Local to the chunk mesh: the blade is built in world space, but three culls each chunk by
+  // its own transform, so the position has to come back through it.
+  const position = root
+    .add(arc)
+    .add(widthAxis.mul(side.mul(width).add(flutter)))
+    .sub(modelPosition);
   const normal = normalize(
     twistedNormal.add(widthAxis.mul(side.mul(2).mul(shapeTweaks.roundness))),
   );

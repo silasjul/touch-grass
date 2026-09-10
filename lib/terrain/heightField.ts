@@ -35,9 +35,16 @@ const bakeNode = Fn(() => {
   textureStore(heightTexture, uvec2(x, y), vec4(h));
 })().compute(resolution * resolution);
 
+/** Returns the relief in local units, the scale `heights` holds — times the ground size for world. */
 export async function bake(renderer: THREE.WebGPURenderer) {
   await renderer.computeAsync(bakeNode);
 
   const attribute = heightBuffer.value as THREE.StorageBufferAttribute;
   await renderer.getArrayBufferAsync(attribute, heights.buffer);
+
+  let peak = 0;
+
+  for (const height of heights) peak = Math.max(peak, Math.abs(height));
+
+  return peak;
 }

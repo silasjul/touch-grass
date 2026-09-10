@@ -17,6 +17,7 @@ export default function GroundPlane() {
   const textures = useGroundTextures();
   const nodes = useMemo(() => buildGroundNodes(textures), [textures]);
   const setSize = useGroundStore((s) => s.setSize);
+  const setShape = useGroundStore((s) => s.setShape);
   const probe = useGroundPointer();
 
   const { size, shape, segments, wireframe } = useControls(
@@ -47,9 +48,10 @@ export default function GroundPlane() {
 
   useEffect(() => {
     setSize(size);
+    setShape(shape);
     groundSize.value = size;
     groundShape.value = shape === "circle" ? 1 : 0;
-  }, [size, shape, setSize]);
+  }, [size, shape, setSize, setShape]);
 
   return (
     <>

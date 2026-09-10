@@ -1,10 +1,11 @@
-import { float, hash, instanceIndex, pow, sin, step } from "three/tsl";
+import { float, hash, pow, sin, step } from "three/tsl";
 import type * as THREE from "three/webgpu";
+import { bladeIndex } from "./placement";
 import { shapeTweaks as s } from "./tweaks/shapeTweaks";
 
 type Float = THREE.Node<"float">;
 
-const random = (offset: number) => hash(instanceIndex.add(offset));
+const random = (offset: number) => hash(bladeIndex.add(offset));
 
 export const bladeRandom = {
   facing: random(17),
