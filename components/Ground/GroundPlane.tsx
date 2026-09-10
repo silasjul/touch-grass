@@ -3,16 +3,19 @@ import { folder, useControls } from "tsl-inspector";
 import GroundNormalArrow from "@/components/Ground/GroundNormalArrow";
 import { GROUND } from "@/configs/groundPlaneConfigs";
 import { useGroundPointer } from "@/hooks/ground/useGroundPointer";
+import { useGroundTextures } from "@/hooks/terrain/useGroundTextures";
 import { useHeightField } from "@/hooks/terrain/useHeightField";
 import { buildGroundNodes } from "@/lib/terrain/groundNodes";
+import { groundSize } from "@/lib/terrain/groundSize";
 import { useGroundStore } from "@/stores/groundStore";
 
 export default function GroundPlane() {
   useHeightField();
 
-  const nodes = useMemo(() => buildGroundNodes(), []);
+  const textures = useGroundTextures();
+  const nodes = useMemo(() => buildGroundNodes(textures), [textures]);
   const setSize = useGroundStore((s) => s.setSize);
-  const { probe, handlers } = useGroundPointer();
+  const probe = useGroundPointer();
 
   const { size, segments, wireframe } = useControls(
     "Ground",
@@ -29,17 +32,22 @@ export default function GroundPlane() {
     { order: 0, collapsed: true },
   );
 
-  useEffect(() => setSize(size), [size, setSize]);
+  useEffect(() => {
+    setSize(size);
+    groundSize.value = size;
+  }, [size, setSize]);
 
   return (
     <>
-      <mesh scale={size} rotation-x={-Math.PI / 2} {...handlers}>
+      <mesh scale={size} rotation-x={-Math.PI / 2}>
         <planeGeometry args={[1, 1, segments, segments]} />
         <meshStandardNodeMaterial
           positionNode={nodes.positionNode}
           normalNode={nodes.normalNode}
+          colorNode={nodes.colorNode}
+          roughnessNode={nodes.roughnessNode}
+          aoNode={nodes.aoNode}
           wireframe={wireframe}
-          roughness={0.6}
         />
       </mesh>
 

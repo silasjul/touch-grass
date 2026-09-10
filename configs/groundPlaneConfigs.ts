@@ -22,3 +22,16 @@ export const GROUND_NOISE = {
   level2: { frequency: 5.81, amplitude: 0.005 },
   level3: { frequency: 10.16, amplitude: 0.0029 },
 };
+
+export const GROUND_SURFACE = {
+  scale: 3.5,
+  brightness: 1.33,
+  contrast: 0.92,
+  saturation: 0.98,
+  tint: "#ffffff",
+  normalStrength: 1,
+  roughness: 1,
+  ao: 1,
+  variation: 0.35,
+  variationScale: 6,
+};
