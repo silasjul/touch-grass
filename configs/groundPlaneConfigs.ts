@@ -4,6 +4,19 @@ export const GROUND = {
   size: 45,
 };
 
+export const HEIGHT_FIELD = {
+  resolution: 512,
+};
+
+export const GROUND_ARROW = {
+  enabled: false,
+  length: 5.5,
+  radius: 0.13,
+  headLength: 1.6,
+  headRadius: 0.42,
+  color: "#3d7dff",
+};
+
 export const GROUND_NOISE = {
   level1: { frequency: 2.46, amplitude: 0.043 },
   level2: { frequency: 5.81, amplitude: 0.005 },

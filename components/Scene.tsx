@@ -2,7 +2,7 @@
 
 import { Canvas } from "@react-three/fiber";
 import Light from "@/components/Light";
-import GroundPlane from "@/components/GroundPlane";
+import GroundPlane from "@/components/Ground/GroundPlane";
 import Controls from "@/components/Controls";
 import CameraTweaks from "@/components/CameraTweaks";
 import { createWebGPURenderer, useParametersToggle } from "tsl-inspector";
