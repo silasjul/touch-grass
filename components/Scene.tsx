@@ -4,6 +4,7 @@ import { Canvas } from "@react-three/fiber";
 import Light from "@/components/Light";
 import GroundPlane from "@/components/Ground/GroundPlane";
 import GrassField from "@/components/Grass/GrassField";
+import Sky from "@/components/Sky";
 import Controls from "@/components/Controls";
 import CameraTweaks from "@/components/CameraTweaks";
 import { createWebGPURenderer, useParametersToggle } from "tsl-inspector";
@@ -21,6 +22,7 @@ export default function Scene() {
       }}
       gl={createWebGPURenderer}
     >
+      <Sky />
       <Light />
       <GroundPlane />
       <GrassField />

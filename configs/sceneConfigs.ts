@@ -5,6 +5,14 @@ export const LIGHT_DEFAULTS = {
   sunX: -60,
   sunZ: -40,
   ambientColor: "#cdd8ff",
-  fill: 1.05,
+  fill: 0.7,
   helper: false,
+};
+
+export const SKY_DEFAULTS = {
+  background: true,
+  blur: 0,
+  backgroundIntensity: 0.85,
+  environmentIntensity: 0.11,
+  rotation: 0,
 };
