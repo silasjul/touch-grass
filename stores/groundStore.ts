@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { GROUND, GROUND_ARROW } from "@/configs/groundPlaneConfigs";
+import { GROUND } from "@/configs/groundPlaneConfigs";
 import type { GroundShape } from "@/lib/terrain/groundShape";
 
 type GroundStore = {
@@ -9,8 +9,8 @@ type GroundStore = {
   setShape: (shape: GroundShape) => void;
   relief: number;
   setRelief: (relief: number) => void;
-  probeEnabled: boolean;
-  setProbeEnabled: (probeEnabled: boolean) => void;
+  touching: boolean;
+  setTouching: (touching: boolean) => void;
 };
 
 export const useGroundStore = create<GroundStore>((set) => ({
@@ -20,6 +20,6 @@ export const useGroundStore = create<GroundStore>((set) => ({
   setShape: (shape) => set({ shape }),
   relief: 0,
   setRelief: (relief) => set({ relief }),
-  probeEnabled: GROUND_ARROW.enabled,
-  setProbeEnabled: (probeEnabled) => set({ probeEnabled }),
+  touching: false,
+  setTouching: (touching) => set({ touching }),
 }));

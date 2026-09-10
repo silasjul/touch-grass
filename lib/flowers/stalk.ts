@@ -1,6 +1,7 @@
 import { cos, cross, float, mix, normalize, sin, vec2, vec3 } from "three/tsl";
 import type * as THREE from "three/webgpu";
 import { groundAt } from "@/lib/field/ground";
+import { touchAt } from "@/lib/hand/touch";
 import { gustAt, windDirection } from "@/lib/wind/gust";
 import { bloom, flowerRandom, headNod, stemBend, stemHeight } from "./flowerShape";
 import { clumpAt, flowerAnchor, insideField } from "./placement";
@@ -23,18 +24,19 @@ export function buildStalk() {
   const root = vec3(anchor.x, ground.height, anchor.y).toVar();
 
   const gust = gustAt(anchor);
+  const alive = insideField(anchor).mul(clumpAt(anchor)).mul(bloom).toVar();
+  const reach = stemHeight.mul(alive).toVar();
+  const touch = touchAt(anchor, ground.height.add(reach));
   const spin = flowerRandom.facing.mul(TAU);
-  const facing = normalize(
-    mix(vec2(cos(spin), sin(spin)), windDirection, windAlignment(gust)),
-  ).toVar();
+  const drift = mix(vec2(cos(spin), sin(spin)), windDirection, windAlignment(gust));
+  const facing = normalize(mix(drift, touch.away, touch.weight)).toVar();
 
   const up = normalize(mix(vec3(0, 1, 0), ground.normal, fieldTweaks.lean)).toVar();
   const sideAxis = normalize(cross(up, vec3(facing.x, 0, facing.y))).toVar();
   const bendAxis = cross(sideAxis, up).toVar();
 
-  const alive = insideField(anchor).mul(clumpAt(anchor)).mul(bloom).toVar();
-  const height = stemHeight.mul(alive).toVar();
-  const bend = stemBend.add(swayFrom(gust)).max(0.02).toVar();
+  const height = reach.mul(touch.squash).toVar();
+  const bend = stemBend.add(swayFrom(gust)).add(touch.bend).max(0.02).toVar();
   const radius = height.div(bend);
   const bobble = bobbleAt(flowerRandom.phase).mul(height).toVar();
 

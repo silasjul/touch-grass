@@ -18,7 +18,7 @@ export default function GroundPlane() {
   const nodes = useMemo(() => buildGroundNodes(textures), [textures]);
   const setSize = useGroundStore((s) => s.setSize);
   const setShape = useGroundStore((s) => s.setShape);
-  const probe = useGroundPointer();
+  useGroundPointer();
 
   const { size, shape, segments, wireframe } = useControls(
     "Ground",
@@ -67,7 +67,7 @@ export default function GroundPlane() {
         />
       </mesh>
 
-      <GroundNormalArrow probe={probe} />
+      <GroundNormalArrow />
     </>
   );
 }

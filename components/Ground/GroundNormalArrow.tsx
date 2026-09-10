@@ -1,9 +1,9 @@
 import { useFrame } from "@react-three/fiber";
-import { useEffect, useRef, type RefObject } from "react";
+import { useRef } from "react";
 import * as THREE from "three";
 import { useControls } from "tsl-inspector";
 import { GROUND_ARROW } from "@/configs/groundPlaneConfigs";
-import type { GroundProbe } from "@/hooks/ground/useGroundPointer";
+import { groundProbe } from "@/lib/ground/probe";
 import {
   sampleGroundHeight,
   sampleGroundNormal,
@@ -13,13 +13,9 @@ import { useGroundStore } from "@/stores/groundStore";
 const UP = new THREE.Vector3(0, 1, 0);
 const normal = new THREE.Vector3();
 
-export default function GroundNormalArrow({
-  probe,
-}: {
-  probe: RefObject<GroundProbe>;
-}) {
+export default function GroundNormalArrow() {
   const group = useRef<THREE.Group>(null);
-  const setProbeEnabled = useGroundStore((s) => s.setProbeEnabled);
+  const touching = useGroundStore((s) => s.touching);
 
   const { enabled, length, radius, headLength, headRadius, color } =
     useControls(
@@ -50,16 +46,11 @@ export default function GroundNormalArrow({
       { order: 3, collapsed: true },
     );
 
-  useEffect(() => setProbeEnabled(enabled), [enabled, setProbeEnabled]);
-
   useFrame(() => {
     const arrow = group.current;
-    if (!arrow) return;
+    if (!arrow || !arrow.visible) return;
 
-    arrow.visible = enabled && probe.current.held;
-    if (!arrow.visible) return;
-
-    const { x, z } = probe.current;
+    const { x, z } = groundProbe;
 
     arrow.position.set(x, sampleGroundHeight(x, z), z);
     arrow.quaternion.setFromUnitVectors(UP, sampleGroundNormal(x, z, normal));
@@ -69,7 +60,7 @@ export default function GroundNormalArrow({
 
   // Built upside down inside a group that stands along the normal, so the tip lands on the surface.
   return (
-    <group ref={group} visible={false}>
+    <group ref={group} visible={enabled && touching}>
       <mesh position-y={headLength / 2} rotation-x={Math.PI}>
         <coneGeometry args={[headRadius, headLength, 20]} />
         <meshStandardNodeMaterial color={color} roughness={0.35} />

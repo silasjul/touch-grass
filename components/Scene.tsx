@@ -1,11 +1,13 @@
 "use client";
 
 import { Canvas } from "@react-three/fiber";
+import { Suspense } from "react";
 import { CAMERA_ORBIT } from "@/configs/cameraConfigs";
 import { fromAngles } from "@/lib/scene/spherical";
 import Light from "@/components/Light";
 import GroundPlane from "@/components/Ground/GroundPlane";
 import GrassField from "@/components/Grass/GrassField";
+import Hand from "@/components/Hand/Hand";
 import FlowerField from "@/components/Flowers/FlowerField";
 import Sky from "@/components/Sky";
 import CameraOrbit from "@/components/Camera/CameraOrbit";
@@ -30,6 +32,9 @@ export default function Scene() {
       <GroundPlane />
       <GrassField />
       <FlowerField />
+      <Suspense fallback={null}>
+        <Hand />
+      </Suspense>
       <CameraOrbit />
       <CameraTweaks />
     </Canvas>

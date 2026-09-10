@@ -1,14 +1,13 @@
 import { useStore, useThree } from "@react-three/fiber";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import * as THREE from "three";
+import { aimProbe } from "@/lib/ground/probe";
 import { useGroundStore } from "@/stores/groundStore";
 
 const PLANE = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
 const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
 const hit = new THREE.Vector3();
-
-export type GroundProbe = { held: boolean; x: number; z: number };
 
 /**
  * DOM listeners rather than the mesh's own `onPointerDown`: r3f raycasts every object carrying a
@@ -19,9 +18,10 @@ export function useGroundPointer() {
   const canvas = useThree((s) => s.gl.domElement);
   const camera = useThree((s) => s.camera);
   const store = useStore();
-  const probe = useRef<GroundProbe>({ held: false, x: 0, z: 0 });
 
   useEffect(() => {
+    const { setTouching } = useGroundStore.getState();
+
     const setOrbit = (enabled: boolean) => {
       const orbit = store.getState().controls as { enabled: boolean } | null;
 
@@ -39,17 +39,15 @@ export function useGroundPointer() {
 
       if (!raycaster.ray.intersectPlane(PLANE, hit)) return false;
 
-      const half = useGroundStore.getState().size / 2;
-      probe.current.x = THREE.MathUtils.clamp(hit.x, -half, half);
-      probe.current.z = THREE.MathUtils.clamp(hit.z, -half, half);
+      const { size, shape } = useGroundStore.getState();
 
-      return true;
+      return aimProbe(hit.x, hit.z, size, shape);
     };
 
     const drop = () => {
-      if (!probe.current.held) return;
+      if (!useGroundStore.getState().touching) return;
 
-      probe.current.held = false;
+      setTouching(false);
       setOrbit(true);
       canvas.removeEventListener("pointermove", onMove);
       canvas.removeEventListener("pointerup", onUp);
@@ -63,14 +61,14 @@ export function useGroundPointer() {
       drop();
     };
 
-    // Nothing at all when the probe is off, or when the ray misses the plane behind the horizon —
-    // that press belongs to orbiting.
+    // Nothing at all unless the press lands on the ground. Off it, the press belongs to the camera,
+    // and this listener runs first only because it is attached before the orbit controls are.
     const onDown = (event: PointerEvent) => {
-      if (!useGroundStore.getState().probeEnabled) return;
+      if (event.button !== 0 || !event.isPrimary) return;
       if (!aim(event)) return;
 
       canvas.setPointerCapture(event.pointerId);
-      probe.current.held = true;
+      setTouching(true);
       setOrbit(false);
 
       canvas.addEventListener("pointermove", onMove);
@@ -85,6 +83,4 @@ export function useGroundPointer() {
       drop();
     };
   }, [canvas, camera, store]);
-
-  return probe;
 }
