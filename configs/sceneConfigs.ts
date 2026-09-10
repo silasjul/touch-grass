@@ -1,9 +1,9 @@
 export const LIGHT_DEFAULTS = {
   sunColor: "#ffeed9",
   sunIntensity: 2.1,
-  sunHeight: 44,
-  sunX: -60,
-  sunZ: -40,
+  sunAzimuth: -123.7,
+  sunElevation: 31.4,
+  sunDistance: 84.5,
   ambientColor: "#cdd8ff",
   fill: 0.7,
   helper: false,

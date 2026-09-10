@@ -1,14 +1,14 @@
 import { useHelper } from "@react-three/drei";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import { useControls, folder } from "tsl-inspector";
 import { LIGHT_DEFAULTS } from "@/configs/sceneConfigs";
-import { sun } from "@/lib/scene/sun";
+import { sun, sunPosition } from "@/lib/scene/sun";
 
 export default function Light() {
   const directional = useRef<THREE.DirectionalLight>(null!);
 
-  const { sunColor, sunIntensity, sunHeight, ambientColor, fill, helper } =
+  const { sunColor, sunIntensity, sunAzimuth, sunElevation, ambientColor, fill, helper } =
     useControls(
       "Scene",
       {
@@ -21,11 +21,17 @@ export default function Light() {
               max: 10,
               step: 0.1,
             },
-            sunHeight: {
-              value: LIGHT_DEFAULTS.sunHeight,
-              min: -40,
-              max: 80,
-              step: 1,
+            sunAzimuth: {
+              value: LIGHT_DEFAULTS.sunAzimuth,
+              min: -180,
+              max: 180,
+              step: 0.1,
+            },
+            sunElevation: {
+              value: LIGHT_DEFAULTS.sunElevation,
+              min: -10,
+              max: 90,
+              step: 0.1,
             },
             ambientColor: LIGHT_DEFAULTS.ambientColor,
             fill: { value: LIGHT_DEFAULTS.fill, min: 0, max: 3, step: 0.05 },
@@ -37,20 +43,25 @@ export default function Light() {
       { collapsed: true },
     );
 
+  const position = useMemo(
+    () => sunPosition(sunAzimuth, sunElevation),
+    [sunAzimuth, sunElevation],
+  );
+
   useHelper(helper && directional, THREE.DirectionalLightHelper, 8, "#ff4d4d");
 
   useEffect(() => {
-    sun.direction.value.set(LIGHT_DEFAULTS.sunX, sunHeight, LIGHT_DEFAULTS.sunZ).normalize();
+    sun.direction.value.copy(position).normalize();
     sun.color.value.set(sunColor);
     sun.intensity.value = sunIntensity;
-  }, [sunHeight, sunColor, sunIntensity]);
+  }, [position, sunColor, sunIntensity]);
 
   return (
     <>
       <ambientLight color={ambientColor} intensity={fill} />
       <directionalLight
         ref={directional}
-        position={[LIGHT_DEFAULTS.sunX, sunHeight, LIGHT_DEFAULTS.sunZ]}
+        position={position}
         intensity={sunIntensity}
         color={sunColor}
       />
