@@ -17,5 +17,5 @@ export const touchTweaks = controls(
       { collapsed: true },
     ),
   },
-  { order: 3, collapsed: true },
+  { order: 4, collapsed: true },
 );

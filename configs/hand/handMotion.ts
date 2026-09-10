@@ -1,6 +1,6 @@
 export const HAND_MOTION = {
-  fadeIn: 0.45,
-  fadeOut: 0.3,
+  fadeIn: 0.85,
+  fadeOut: 1.03,
   back: 0.55,
   tilt: 38,
   follow: 9,

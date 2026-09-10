@@ -1,5 +1,5 @@
 export const HAND_TOUCH = {
-  radius: 12,
+  radius: 2.7,
   falloff: 3,
   push: 1.8,
   squash: 0.4,

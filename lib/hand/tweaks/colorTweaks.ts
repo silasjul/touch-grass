@@ -16,5 +16,5 @@ export const colorTweaks = controls(
       { collapsed: true },
     ),
   },
-  { order: 4, collapsed: true },
+  { order: 5, collapsed: true },
 );

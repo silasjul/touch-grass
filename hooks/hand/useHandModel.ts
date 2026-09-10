@@ -29,11 +29,7 @@ export function useHandModel() {
     model.scale.setScalar(unit);
     model.position.copy(centre).multiplyScalar(-unit);
 
-    const fade = (opacity: number) => {
-      for (const material of materials) material.opacity = opacity;
-    };
-
-    return { model, materials, fade };
+    return { model, materials };
   }, [scene]);
 
   useEffect(() => () => hand.materials.forEach((material) => material.dispose()), [hand]);

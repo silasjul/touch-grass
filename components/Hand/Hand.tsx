@@ -6,6 +6,7 @@ import { useHandPress } from "@/hooks/hand/useHandPress";
 import { useHandTweaks } from "@/hooks/hand/useHandTweaks";
 import { groundProbe } from "@/lib/ground/probe";
 import { createHandSweep, restHandSweep, sweepHand } from "@/lib/hand/sweep";
+import { revealProgress, revealSize } from "@/lib/hand/reveal";
 import { touchAxis, touchDrift, touchHeight, touchPoint, touchStrength } from "@/lib/hand/touch";
 import { sampleGroundHeight } from "@/lib/terrain/sampleGround";
 
@@ -17,7 +18,7 @@ export default function Hand() {
   const bank = useRef<THREE.Group>(null);
   const sweep = useRef(createHandSweep());
 
-  const { model, fade } = useHandModel();
+  const { model } = useHandModel();
   const { model: pose, motion } = useHandTweaks();
   const move = useHandPress(motion.fadeIn, motion.fadeOut);
 
@@ -28,7 +29,9 @@ export default function Hand() {
     const hand = sweep.current;
 
     touchStrength.value = Math.max(press.press, 0);
-    aim.current.visible = press.opacity > 0.002;
+    revealProgress.value = press.reveal;
+    revealSize.value = pose.size;
+    aim.current.visible = press.reveal > 0.002;
 
     if (!aim.current.visible) {
       restHandSweep(hand, groundProbe.x, groundProbe.z);
@@ -56,7 +59,6 @@ export default function Hand() {
     touchAxis.value.set(Math.cos(facing), -Math.sin(facing));
     touchDrift.value.set(hand.driftX, hand.driftZ);
     touchHeight.value = height;
-    fade(press.opacity);
   });
 
   return (
